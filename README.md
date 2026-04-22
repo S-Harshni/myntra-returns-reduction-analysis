@@ -1,6 +1,22 @@
-# Myntra Sales Analysis Dashboard
+# Myntra-returns-reduction-analysis
 
-## This project uses Power BI Desktop and Excel to help improve sales of the company, improve the business and make the necessary changes according to it.
+## 📌 Overview
+This project analyzes sales data from a fashion e-commerce platform and identifies key business problems related to customer behavior, product performance, and return rates. Based on insights, product solutions are proposed to improve user experience and reduce operational costs.
+
+---
+
+## 🧩 Problem Statement
+Fashion e-commerce platforms like Myntra face:
+- High product return rates  
+- Low customer confidence in size/fit  
+- Revenue loss due to inefficient product insights  
+
+---
+## 👤 Target Users
+- Online fashion shoppers  
+- Users uncertain about product size and fit  
+- First-time buyers with low trust  
+
 
 ## Data Source:
 1) Kaggle
@@ -8,6 +24,13 @@
 ## Application Used: 
 1) Power BI
 2) Excel
+
+## 📊 Data Analysis Performed
+- Category-wise sales distribution  
+- Top-performing products  
+- Customer purchase patterns  
+- Revenue trends  
+
 
 ## NovyPro Dashboard link: 
 https://www.novypro.com/project/myntra-sales-dashboard-1
