@@ -2,7 +2,6 @@
 
 <!-- live-links -->
 > 🔗 **Live project page:** [s-harshni.github.io/myntra-returns-reduction-analysis](https://s-harshni.github.io/myntra-returns-reduction-analysis/)  
-> 📊 **Live dashboard:** [NovyPro](https://www.novypro.com/project/myntra-sales-dashboard-1)  
 > 👤 **Portfolio:** [s-harshni.github.io/S-Harshni](https://s-harshni.github.io/S-Harshni/)  
 <!-- live-links -->
 
@@ -37,9 +36,6 @@ Fashion e-commerce platforms like Myntra face:
 - Customer purchase patterns  
 - Revenue trends  
 
-
-## NovyPro Dashboard link: 
-https://www.novypro.com/project/myntra-sales-dashboard-1
 
 ## Key Features:
 1) This entails establishing key performance indicators (KPIs) for revenue, orders, sales amount, and total products.
