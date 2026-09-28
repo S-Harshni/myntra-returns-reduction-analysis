@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Myntra Returns-Reduction Analysis</title>
+<meta name="description" content="A Power BI analysis of 10K+ Myntra sales records that finds what drives returns and proposes fixes, with a projected 15% drop in the return rate.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#f7f8fb; --surface:#fff; --border:#e3e8f0; --text:#0f1b2d; --text-2:#4a5567; --muted:#7a8699;
+  --accent:#ea580c; --accent-2:#be123c; --soft:color-mix(in srgb, var(--accent) 11%, transparent);
+  --shadow:0 1px 2px rgba(15,27,45,.04),0 8px 24px rgba(15,27,45,.06);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:#0a0f1a; --surface:#111827; --border:#1f2a3f; --text:#e8eef9; --text-2:#aab6ca; --muted:#7b889e;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25); color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg:#0a0f1a; --surface:#111827; --border:#1f2a3f; --text:#e8eef9; --text-2:#aab6ca; --muted:#7b889e;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25); color-scheme: dark;
+}
+* { box-sizing:border-box; margin:0; padding:0; }
+body { font-family:Inter,system-ui,sans-serif; background:var(--bg); color:var(--text); line-height:1.6; -webkit-font-smoothing:antialiased; }
+a { color:inherit; text-decoration:none; }
+.wrap { max-width:1040px; margin:0 auto; padding:0 24px; }
+.hero { background:linear-gradient(135deg,var(--accent),var(--accent-2)); color:#fff; padding:28px 0 64px; position:relative; overflow:hidden; }
+.hero::after { content:""; position:absolute; inset:0; opacity:.14; background-image:radial-gradient(#fff 1px,transparent 1px); background-size:18px 18px; pointer-events:none; }
+.top { display:flex; justify-content:space-between; align-items:center; position:relative; z-index:1; font-size:14px; }
+.top a { display:inline-flex; gap:6px; align-items:center; opacity:.9; }
+.top a:hover { opacity:1; }
+.kind { font-family:"JetBrains Mono",monospace; font-size:12px; letter-spacing:.06em; margin-top:48px; opacity:.9; position:relative; z-index:1; }
+h1 { font-family:"Space Grotesk",sans-serif; font-size:clamp(34px,5.5vw,56px); line-height:1.05; letter-spacing:-.02em; margin:10px 0 14px; position:relative; z-index:1; }
+.sub { font-size:18px; max-width:680px; opacity:.95; position:relative; z-index:1; }
+.btns { display:flex; gap:10px; flex-wrap:wrap; margin-top:28px; position:relative; z-index:1; }
+.btn { display:inline-flex; gap:8px; align-items:center; padding:11px 18px; border-radius:10px; font-weight:600; font-size:14px; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.35); color:#fff; transition:transform .15s; }
+.btn.primary { background:#fff; color:#0f1b2d; border-color:#fff; }
+.btn:hover { transform:translateY(-2px); }
+.metrics { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:-36px; position:relative; z-index:2; }
+.metric { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:18px 20px; box-shadow:var(--shadow); }
+.metric b { display:block; font-family:"Space Grotesk",sans-serif; font-size:28px; letter-spacing:-.02em; }
+.metric span { font-size:13px; color:var(--muted); }
+section { margin-top:64px; }
+h2 { font-family:"Space Grotesk",sans-serif; font-size:28px; letter-spacing:-.01em; margin-bottom:20px; }
+.overview { display:grid; grid-template-columns:1.3fr 1fr; gap:28px; }
+.overview p { color:var(--text-2); font-size:16.5px; margin-bottom:14px; }
+.card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:22px 24px; box-shadow:var(--shadow); }
+.card h3 { font-size:13px; font-family:"JetBrains Mono",monospace; color:var(--accent); text-transform:uppercase; letter-spacing:.06em; margin-bottom:12px; }
+.card ul { list-style:none; display:grid; gap:8px; }
+.card li { padding-left:20px; position:relative; color:var(--text-2); font-size:15px; }
+.card li::before { content:"▹"; position:absolute; left:0; color:var(--accent); }
+.steps { list-style:none; display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px; }
+.steps li { display:flex; gap:14px; background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:18px; box-shadow:var(--shadow); }
+.steps .n { font-family:"JetBrains Mono",monospace; color:var(--accent); font-size:13px; padding-top:3px; }
+.steps h3 { font-size:16px; margin-bottom:4px; }
+.steps p { font-size:14px; color:var(--text-2); }
+.gallery { display:grid; grid-template-columns:repeat(2,1fr); gap:16px; }
+figure { background:var(--surface); border:1px solid var(--border); border-radius:14px; overflow:hidden; box-shadow:var(--shadow); }
+figure.wide { grid-column:1/-1; }
+figure img { width:100%; display:block; background:#fff; }
+figcaption { padding:10px 14px; font-size:13.5px; color:var(--muted); border-top:1px solid var(--border); }
+.chips { display:flex; flex-wrap:wrap; gap:8px; }
+.chip { font-size:13.5px; padding:6px 12px; border-radius:8px; background:var(--soft); color:var(--accent); font-weight:500; }
+.note { margin-top:18px; font-size:14px; color:var(--muted); background:var(--surface); border:1px dashed var(--border); border-radius:12px; padding:14px 16px; }
+.note code { font-family:"JetBrains Mono",monospace; font-size:12.5px; }
+.arch { display:grid; gap:10px; }
+.layer { border-radius:12px; padding:14px 18px; border:1px solid var(--border); background:var(--surface); box-shadow:var(--shadow); }
+.layer b { font-family:"Space Grotesk",sans-serif; }
+.layer span { display:block; color:var(--text-2); font-size:14px; }
+.layer:nth-child(1) { border-left:4px solid var(--accent); }
+.layer:nth-child(2) { border-left:4px solid color-mix(in srgb,var(--accent) 70%,var(--accent-2)); }
+.layer:nth-child(3) { border-left:4px solid color-mix(in srgb,var(--accent) 35%,var(--accent-2)); }
+.layer:nth-child(4) { border-left:4px solid var(--accent-2); }
+footer { margin:72px 0 40px; text-align:center; color:var(--muted); font-size:13px; font-family:"JetBrains Mono",monospace; }
+@media (max-width:760px) {
+  .metrics { grid-template-columns:repeat(2,1fr); }
+  .overview, .gallery { grid-template-columns:1fr; }
+}
+@media (max-width:480px) { .wrap { padding:0 16px; } .metric b { font-size:22px; } }
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <div class="top">
+      <a href="https://s-harshni.github.io/S-Harshni/"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5m6-6-6 6 6 6"/></svg>S Harshni</a>
+      <a href="https://github.com/S-Harshni/myntra-returns-reduction-analysis" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.2.5-2.3 1.2-3.1-.1-.4-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.7 18.3 5 18.3 5c.7 1.7.2 2.8.1 3.2.8.8 1.2 1.9 1.2 3.1 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .5z"/></svg>Source</a>
+    </div>
+    <p class="kind">DATA ANALYTICS · POWER BI</p>
+    <h1>Myntra Returns-Reduction Analysis</h1>
+    <p class="sub">A Power BI analysis of 10K+ Myntra sales records that finds what drives returns and proposes fixes, with a projected 15% drop in the return rate.</p>
+    <div class="btns"><a class="btn primary" href="https://www.novypro.com/project/myntra-sales-dashboard-1" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 3h7v7M10 14 21 3M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"/></svg>Open live dashboard</a><a class="btn" href="https://github.com/S-Harshni/myntra-returns-reduction-analysis" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.2.5-2.3 1.2-3.1-.1-.4-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.7 18.3 5 18.3 5c.7 1.7.2 2.8.1 3.2.8.8 1.2 1.9 1.2 3.1 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .5z"/></svg>View source &amp; files</a></div>
+  </div>
+</header>
+<main class="wrap">
+  <div class="metrics"><div class="metric"><b>10K+</b><span>sales records analyzed</span></div><div class="metric"><b>20+</b><span>states covered</span></div><div class="metric"><b>4</b><span>core KPIs defined</span></div><div class="metric"><b>15%</b><span>projected drop in returns</span></div></div>
+  <section>
+    <h2>Overview</h2>
+    <div class="overview">
+      <div><p>Fashion e-commerce platforms lose revenue to high return rates, driven largely by low confidence in size and fit.</p><p>I wrote the business requirements, defined KPIs, and built an interactive Power BI dashboard on Kaggle&#x27;s Myntra sales data. The analysis traced returns to size and fit issues and proposed product changes to reduce them.</p></div>
+      <div class="card"><h3>Highlights</h3><ul><li>Business requirements and KPIs: revenue, orders, sales amount, total products</li><li>Top brands by revenue and owned-brand product counts</li><li>Daily sales by category and sales across 20+ states</li><li>Size/fit insight → projected 15% drop in return rate</li></ul></div>
+    </div>
+  </section>
+  <section><h2>Approach</h2><ol class="steps"><li><span class="n">01</span><div><h3>Define the problem</h3><p>High returns, low size/fit confidence and revenue leakage; target users are first-time and unsure shoppers.</p></div></li><li><span class="n">02</span><div><h3>Clean &amp; model data</h3><p>Prepared 10K+ Kaggle sales records in Excel and modeled them in Power BI.</p></div></li><li><span class="n">03</span><div><h3>Build the dashboard</h3><p>KPI cards, brand revenue, category trends and a state-level sales map.</p></div></li><li><span class="n">04</span><div><h3>Recommend fixes</h3><p>Size-and-fit guidance and product insights aimed at a 15% lower return rate.</p></div></li></ol></section>
+  
+  <section><h2>Dashboard</h2><div class="gallery"><figure class="wide"><a href="assets/final.jpg" target="_blank"><img src="assets/final.jpg" alt="Final Power BI dashboard" loading="lazy"></a><figcaption>Final Power BI dashboard</figcaption></figure><figure class="half"><a href="assets/rev-brand.jpg" target="_blank"><img src="assets/rev-brand.jpg" alt="Revenue by brand" loading="lazy"></a><figcaption>Revenue by brand</figcaption></figure><figure class="half"><a href="assets/sales-cat.jpg" target="_blank"><img src="assets/sales-cat.jpg" alt="Sales by category" loading="lazy"></a><figcaption>Sales by category</figcaption></figure><figure class="half"><a href="assets/rev-state.jpg" target="_blank"><img src="assets/rev-state.jpg" alt="Revenue by state" loading="lazy"></a><figcaption>Revenue by state</figcaption></figure><figure class="half"><a href="assets/sale-dis.jpg" target="_blank"><img src="assets/sale-dis.jpg" alt="Daily sales distribution" loading="lazy"></a><figcaption>Daily sales distribution</figcaption></figure></div></section>
+  <section><h2>Tech stack</h2><div class="chips"><span class="chip">Power BI</span><span class="chip">DAX</span><span class="chip">Excel</span><span class="chip">KPI Design</span><span class="chip">Business Requirements</span><span class="chip">Kaggle</span></div><p class="note">The interactive dashboard is hosted on NovyPro (button above). The .pbix, dataset, business requirements doc and slide deck are in the GitHub repo.</p></section>
+</main>
+<footer>S Harshni · <a href="https://github.com/S-Harshni/myntra-returns-reduction-analysis">source on GitHub</a></footer>
+</body>
+</html>
