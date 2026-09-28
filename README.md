@@ -1,5 +1,11 @@
 # Myntra-returns-reduction-analysis
 
+<!-- live-links -->
+> 🔗 **Live project page:** [s-harshni.github.io/myntra-returns-reduction-analysis](https://s-harshni.github.io/myntra-returns-reduction-analysis/)  
+> 📊 **Live dashboard:** [NovyPro](https://www.novypro.com/project/myntra-sales-dashboard-1)  
+> 👤 **Portfolio:** [s-harshni.github.io/S-Harshni](https://s-harshni.github.io/S-Harshni/)  
+<!-- live-links -->
+
 ## 📌 Overview
 This project analyzes sales data from a fashion e-commerce platform and identifies key business problems related to customer behavior, product performance, and return rates. Based on insights, product solutions are proposed to improve user experience and reduce operational costs.
 
